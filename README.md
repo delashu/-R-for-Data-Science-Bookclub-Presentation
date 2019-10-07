@@ -6,7 +6,9 @@ Mayo Clinic R For Data Science Bookclub
 R For Data Science by Hadley Wickham & Garrett Grolemund 
 Chapters 2 & 3 Overview Presentation
 
-Includes: 
+Includes:  
+
+
 "Ch3_4_Bookclub.Rmd" (R Markdown file that can be knit into iO slides)  
 
 
