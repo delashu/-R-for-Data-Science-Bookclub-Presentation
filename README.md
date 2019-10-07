@@ -7,5 +7,7 @@ R For Data Science by Hadley Wickham & Garrett Grolemund
 Chapters 2 & 3 Overview Presentation
 
 Includes: 
-"" (R Markdown file that can be knit into iO slides)
+"Ch3_4_Bookclub.Rmd" (R Markdown file that can be knit into iO slides)  
+
+
 "" (html file of slides that were presented at bookclub)
