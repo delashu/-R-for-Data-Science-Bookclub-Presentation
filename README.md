@@ -10,3 +10,8 @@ Includes:
 
 
 "Rbookclub_C3_4.pdf" (pdf file of slides that were presented at bookclub)
+
+libraries needed to knit the Rmd file: 
+  library(tidyverse)
+  library(nycflights13)
+  library(arsenal)
