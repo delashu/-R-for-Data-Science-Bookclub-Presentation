@@ -4,7 +4,6 @@ subtitle: "Chapters 2 & 3"
 author: Shu Asai
 date: "04/03/2019"
 output:
-  rlocal::mayo_ioslides:
     beamer_presentation:
     widescreen: true
     
