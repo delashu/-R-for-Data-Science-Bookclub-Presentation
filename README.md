@@ -9,4 +9,4 @@ Includes:
 "Ch3_4_Bookclub.Rmd" (R Markdown file that can be knit into iO slides)  
 
 
-"" (html file of slides that were presented at bookclub)
+"Rbookclub_C3_4.pdf" (pdf file of slides that were presented at bookclub)
