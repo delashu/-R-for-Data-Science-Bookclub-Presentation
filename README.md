@@ -1,6 +1,6 @@
 # R_for_Data_Science_Bookclub_Presentation
 
-Mayo Clinic 'R for Data Science' Book-club Chapters 2 &amp; 3 Presentation
+Mayo Clinic 'R for Data Science' Book-club Chapters 3 &amp; 4 Presentation
 
 
 Includes:  
