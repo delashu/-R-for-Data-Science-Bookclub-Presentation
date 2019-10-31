@@ -1,1 +1,809 @@
+---
+title: " R Bookclub"
+subtitle: "Chapters 2 & 3"
+author: Shu Asai
+date: "04/03/2019"
+output:
+  rlocal::mayo_ioslides:
+    beamer_presentation:
+    widescreen: true
+    
+classoption: "aspectratio=169" 
+---
+
+```{r setup, include=FALSE}
+library(arsenal)
+library(tidyverse)
+knitr::opts_chunk$set(echo=TRUE, fig.align = "center", fig.height = 3, fig.width = 5, fig.align = "center",comment=NA)
+options(stringsAsFactors = FALSE)
+```
+
+# Chapter 2: Workflow basics 
+
+## R as a calculator {.build}
+```{r}
+2+4
+```
+
+```{r}
+pi
+(pi+1)/2
+```
+
+
+## Objects & Naming {.build}
+Use   **' <- '**   to attribute value to objects  
+<br />
+
+
+```{r}
+floors_harwick <- 8
+```
+
+```{r}
+floors_gonda <- 19
+```
+
+Exercise:  
+```{r}
+floor_diff <- floors_gonda - floors_harwick
+```
+
+```{r}
+floor_diff
+```
+
+  
+
+## Functions {.build}  
+Provide input arguments, Obtain output  
+
+Example: **seq()**  
+
+  - Two arguments needed: seq(from, to)
+  - R produces a **seq**uence of integers from provided arguments
+  
+```{r}
+seq(10,20)
+```
+
+Function documentation is found by typing "?" + function name in the Console: 
+```{r, eval=FALSE, echo=TRUE}
+?seq
+```
+
+
+## Exercises {.build}  
+Find the error in my code
+```{r, eval=FALSE, echo=TRUE}
+ggplot(dota = mpg) +
+  geom_point(mapping = aes(x=displ, y=hwy))
+
+```
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x=displ, y=hwy))
+```
+
+
+## Exercises cont. {.build}
+
+```{r,eval=F, echo=TRUE}
+fliter(mpg, cyl=8)
+```
+
+
+```{r}
+filter(mpg, cyl==8)
+```
+
+## Exercises cont. {.build}
+
+```{r,eval=FALSE, echo=TRUE}
+filter(diamond, carat>3)
+```
+
+```{r}
+
+filter(diamonds, carat>3)
+```
+
+## Keyboard Tips & Shortcuts {.build}
+> - Snake Case (Examples: "floors_harwick" , "cohort_A" , "scatter_MCHS")  
+
+      * Descriptive and readable object names
+      * Avoid camel case and periods
+  
+> - Use **(Alt) (-)** as a keyboard shortcut for **<-**  
+  
+> - Using "Tab" to explore objects  
+  
+> - RStudio Environment & History: (Cmd) (Ctrl) (-) (up arrow)   
+  
+> - Shortcut Cheatsheet:  (Alt) (Shift) (K)   
+
+
+# Chapter 3: Transformations with dplyr
+
+## Variable Types {.build}
+* *int* (Integers)  
+  
+* *dbl* (Doubles or real numbers)  
+  
+* *chr* (Character vectors or strings)  
+  
+* *dttm* (Date / Times)
+
+
+
+## ?dplyr {.build}
+  **What** is it?   
+  
+    dplyr is an R package containing functions useful to transform and manipulate data.  
+  **Why** dplyr?  
+  
+    Intuitive, readable, and fast!
+
+  Five key dplyr functions:   
+   
+    1. filter
+    2. arrange
+    3. select  
+    4. mutate  
+    5. summarize
+  
+
+    
+## dplyr Function Workflow {.build}
+
+Load in the dplyr package
+```{r}
+library(dplyr)
+```
+
+
+> 1. Provide the function a dataframe
+> 2. Describe what to do to the dataframe with column specifications
+> 3. Output to a new dataframe
+
+
+
+## The Data {.build}
+```{r, eval=TRUE, echo=F, include=FALSE}
+library(nycflights13)
+library(dplyr)
+```
+
+```{r}
+flights
+```
+
+# 'filter': Subset Rows
+
+
+## 'filter' workflow {.build}
+* Provide the function a dataframe   
+
+```{r, eval=F,echo=T}
+filter(flights)
+```
+
+
+* Describe what to do to the dataframe with column specifications
+
+```{r, eval=F, echo=T}
+filter(flights, month == 1 , day == 1)
+```
+
+
+* Output to a new dataframe  
+
+```{r}
+(flights_1_1 <- filter(flights,  month == 1 , day == 1))
+```
+
+## Useful Operators{.build}
+Use operators to specify your "filter" statement. 
+
+  > 1. "and" statement: **&** 
+  > 2. "or" statement: **|** 
+  > 3. "not" statement: **!=** 
+  > 4. extended "or" statement: **%in%** 
+
+<br />
+
+Find all flights operated by United ("UA"), American ("AA"), or Delta ("DL")
+  
+```{r,eval=F, echo=T}
+filter(flights, carrier %in% c( "UA", "AA",  "DL" ))
+```
+
+## More Exercises {.build}
+Find flights that had an arrival delay of two or more hours: 
+```{r, eval=FALSE}
+filter(flights, arr_delay >=2)
+```
+
+Find flights that flew to "IAH" or "HOU"
+```{r, eval=FALSE}
+filter(flights, dest == "IAH" | dest == "HOU")
+filter(flights, dest %in% c("IAH","HOU"))
+```
+
+Find flights that were delayed by at least an hour, but made up over 30 minutes. 
+```{r, eval=F}
+filter(flights, dep_delay >= 1 & arr_delay < -30)
+```
+
+
+## Exercises cont. {.build}
+The *between( column, min, max)* function is also a useful dplyr verb.  
+
+```{r,eval=FALSE}
+filter( dataframe, between(column, min, max) )
+```
+
+How can we use it in this example?
+
+Find flights that departed between July, August, and September.
+
+```{r,eval=F}
+filter(flights, between(month,7,9))
+```
+```{r, echo=FALSE}
+filter(flights, between(month,7,9))[1:3,]
+```
+
+## Exercises cont. {.build}
+Which flights are missing a "dep_time"?
+
+```{r, eval=F}
+filter(flights, is.na(dep_time))
+```
+
+```{r, echo=FALSE}
+filter(flights, is.na(dep_time))[1:3,]
+```
+
+What could these rows represent?
+
+
+# 'arrange': Order your Data 
+
+
+## 'arrange' {.build}
+
+Order dataset by provided columns in ascending order
+
+```{r, eval=T, echo=T}
+(flight_month <- arrange(flights, month))
+```
+
+Default: ascending order
+
+## 'arrange' cont. {.build}
+
+Arranging the data in the opposite direction (descending order):  
+```{r}
+(flight_year_month <- arrange(flights, desc(month)))
+```
+
+## 'arrange': cont. {.build}
+  Multiple arguments in the arrange statement.  
+
+```{r, eval=F}
+flight_year_dep <- arrange(flights, year, dep_time)
+```
+
+```{r, echo=F}
+(flight_year_dep <- arrange(flights, year, dep_time))[1:4,]
+```
+
+  *What happens to NA values in arrange() statements?*
+  
+## Handling NAs and Missing Values {.build}
+> To determine if a value is missing/NA, use the 'is.na()' function:
+  
+```{r}
+x <- NA
+is.na(x)
+```
+  
+> The following result in NA:
+  
+```{r,eval=F, echo=TRUE}
+NA > 5
+10 == NA
+NA + 10
+NA / 2
+```
+
+> *Rule-* if the calculation involves NA, result will almost always be NA. 
+  
+
+
+## NAs: Exceptions {.build}
+
+```{r}
+NA ^ 0
+```
+
+
+```{r}
+NA | TRUE
+```
+
+
+
+## Exercises {.build}
+How can we sort missing values to the top of the dataset?
+
+```{r,eval=F}
+arrange(flights, desc(is.na(dep_time)))
+```
+
+Find flights that were most delayed, then sort by those that left earliest
+```{r,eval=FALSE}
+arrange(flights, desc(dep_delayed), departure)
+```
+
+Find the longest flights
+```{r,eval=F}
+arrange(flights, desc(air_time))
+```
+
+
+# 'select': Select Columns of Data
+
+## 'select' {.build}
+
+```{r}
+flights_ymd <- select(flights, year, month, day)
+flights_ymd
+```
+
+## 'select' cont. {.build}
+
+Selecting all columns between 'carrier' and 'origin' 
+```{r}
+select(flights, carrier:origin)
+```
+
+## 'select' cont. {.build}
+
+Selecting all columns except those from 'carrier' to 'origin'
+
+```{r}
+select(flights, -(carrier : origin))
+```
+
+
+
+## 'select' helper statements {.build}
+
+> starts_with("x")
+
+    selects columns that begin with "x"
+    
+> ends_with("type")
+
+    selects columns that end with "type"
+    
+> contains("gene")
+
+    selects columns that contain "gene"
+    
+> num_range("x", 1:3)
+
+    selects columns titled, "x1", "x2", and "x3" 
+    
+
+## Exercises {.build}
+
+What happens if you refer to the same column multiple times in a 'select' call?
+```{r, eval=FALSE}
+select(flights, year, year)
+```
+
+
+```{r, echo=FALSE}
+select(flights, year, year)[1:3,]
+```
+
+## Exercises cont. {.build}
+
+What does the 'one_of' function do? How could it be useful in a select statement?
+
+Given a vector of characters, 'one_of' finds column names that match in the vector.  
+
+```{r}
+variables <- c("year", "month", "day","arr_time")
+```
+
+
+```{r,eval=FALSE}
+select(flights, one_of(variables))
+```
+
+```{r,echo=FALSE}
+select(flights, one_of(variables))[1:3,]
+```
+
+
+## Column Manipulation {.build}
+Use 'rename' to change column names
+
+Syntax: rename(data, *new_column_name* = old_column_name)
+  
+```{r}
+rename(flights, depart_delay = dep_delay)
+```
+
+
+## Column Manipulation cont. {.build}
+
+Use 'select' and 'everything' together to rearrange columns
+```{r}
+select(flights, time_hour, air_time, everything())
+```
+
+# mutate: Create Columns
+
+## 'mutate' {.build}
+
+Create and append columns to exisiting data with 'mutate'
+
+Syntax: 
+
+<center> mutate(data, *new_column_name* = column manipulation ) </center> 
+
+## 'mutate' example {.build}
+```{r}
+flights_A <- select(flights, year : day, arr_delay, starts_with("dep"))
+```
+
+```{r, echo=FALSE}
+flights_A[1:3,]
+```
+
+```{r, eval=F, echo=T}
+mutate(flights_A, 
+       gain = arr_delay - dep_delay)
+```
+
+```{r, echo=FALSE}
+mutate(flights_A, gain = arr_delay - dep_delay)[1:3,]
+```
+
+## 'mutate' Multiple Columns {.build}
+
+```{r, eval=FALSE}
+mutate(flights_A, 
+       gain = arr_delay - dep_delay,
+       arr_dep_diff = arr_delay - dep_time)
+```
+
+```{r, echo=FALSE}
+mutate(flights_A, 
+       gain = arr_delay - dep_delay,
+       arr_dep_diff = arr_delay - dep_time)[1:5,]
+```
+
+## 'transmute' {.build}
+
+'transmute' is the same as 'mutate', but will instead only keep the new variables: 
+
+```{r, echo=TRUE}
+transmute(flights_A, 
+       gain = arr_delay - dep_delay,
+       arr_dep_diff = arr_delay - dep_time)
+```
+
+
+
+## Useful Functions When Mutating {.build}
+
+> / , + , -,  * , ^
+    
+> sum(), mean()
+  
+> %/% (integer division)
+
+```{r}
+4 %/% 2
+```
+  
+> %% (remainder)
+
+```{r}
+4 %% 2
+```
+
+## Useful Functions When Mutating cont. {.build}
+
+  Logs
+
+  * Natural logarithms
+```{r, eval=FALSE}
+log()
+```
+  
+  * Binary logarithms (base 2)
+```{r, eval=FALSE}
+log2()
+```
+  * Common logarithms (base 10)
+```{r, eval=FALSE}
+log10()
+```
+
+## Useful Functions cont : Offsets {.build} 
+  'lead' & 'lag'
+  
+```{r}
+(tn <- 1:10)
+(lead(tn))
+(lag(tn))
+```
+  
+## Useful Functions cont : Aggregates {.build} 
+Cumulative and rolling calculations 
+
+  What is the sum of all previous values (including current value)?
+```{r}
+cumsum(tn)
+```
+  
+  What is the mean of all previous values (including current value)?
+```{r}
+cummean(tn)
+```
+  
+  others: 'cummin' , 'cummax', 'cumprod'
+
+  
+## Useful Functions cont : Comparisons {.build} 
+Logical comparisons
+
+```{r,eval=FALSE, echo=TRUE}
+<
+>
+<=
+>= 
+!= 
+==
+```
+
+
+## Exercises {.build}
+
+Find the 10 most delayed flights using mutate and the 'min_rank' function.  
+
+**Note:** 'min_rank' assigns a number equal to a number of elements less than that value plus one.
+```{r}
+mr <- c(4, 2, 7, 7, 7 , 0, 10)
+min_rank(mr)
+min_rank(desc(mr))
+```
+
+## Exercises cont. {.build}
+
+Find the 10 most delayed flights using mutate and the 'min_rank' function.  
+
+```{r}
+flights_delay <- mutate(flights, delay_rank = min_rank(desc(dep_delay)))
+```
+
+```{r}
+flights_delay <- select(flights_delay, delay_rank, dep_delay, everything())
+```
+
+```{r}
+arrange(flights_delay, delay_rank)[1:5,]
+```
+
+
+
+## Exercises cont. {.build}
+
+
+
+# 'summarize': Aggregate Calculations
+
+## 'summarize' {.build}
+  Collapses data into a single row: 
+
+```{r}
+summarize(flights, avg_delay = mean(dep_delay, na.rm = TRUE))
+```
+
+  'summarize' is not too useful on its own.  
+  It is often used in tandem with 
+
+<center> **Pipes and 'group_by'** </center> 
+
+# Pipes and 'group_by'
+
+## Grouped Summaries with "group_by" {.build}
+
+Implement *group_by* to use dplyr functions on a *grouped* dataframe
+
+Example: 
+```{r}
+by_day <- group_by(flights, year, month, day)
+```
+The above code does nothing to the structure of the data. The data is merely coerced into a grouped dataframe.
+
+```{r}
+summarize(by_day, delay = mean(dep_delay, na.rm = TRUE))[1:3,]
+```
+
+## A note on 'na.rm' {.build}
+Recall, *most* calculations that include 'NA' values will result in an 'NA'.
+
+```{r}
+mean(c(2,3,4,NA, 6))
+```
+
+
+Omit the 'NA' values in the calculation with use the option *na.rm=TRUE*
+
+```{r}
+mean(c(2,3,4,NA,6), na.rm = TRUE)
+```
+## Ungrouping {.build}
+
+Data can be ungrouped at any time 
+```{r}
+by_day <- group_by(flights, year, month, day)
+```
+
+```{r}
+orig_data <- ungroup(by_day)
+```
+
+## Piping with '%>%'  {.build}
+
+  Pipes allow multiple 'dplyr' functions to be used consecutively. 
+
+  For example, you may want to take your original data, and then: 
+  
+  1. Select specific columns
+  
+  2. Filter for observations 
+  
+  3. Create (mutate) another column
+
+<br />
+
+  <center>  Data **%>%** Select columns **%>%** Filter observations **%>%** Create a column </center>
+
+
+## Pipe Framework {.build}
+```{r,eval=FALSE}
+flight_a <- flights %>% select(year, air_time, dest) %>% mutate(air_time_hours = air_time/60)
+```
+
+> 1. Provide a dataset 
+> 2. Pipe ( %>% )
+> 3. Input desired 'dplyr' function
+> 4. Repeat steps 2 - 3 as needed
+> 5. Output into a new object
+
+
+
+```{r, echo=FALSE}
+(flights %>% select(year, air_time, dest) %>% mutate(air_time_hours = air_time/60))[1:3,]
+```
+
+
+## Pipes and 'group_by' together {.build}
+
+> Using both pipes and 'group_by' allows data manipulation to groups of data. 
+
+> Consider the question: What was the average departure delay in each month? 
+
+> 'group_by' month, use the 'summarize' function
+
+```{r, eval=FALSE}
+flights %>% group_by(month) %>% summarize(avg_delay = mean(dep_delay,na.rm=TRUE))
+```
+```{r, echo=F}
+(flights %>% group_by(month) %>% summarize(avg_delay = mean(dep_delay,na.rm=TRUE)))[1:4,]
+```
+
+## Useful Summary Functions {.build}
+
+```{r, eval=FALSE}
+flights %>% group_by(month) %>% summarize()
+```
+
+> **Location:** mean(x), median(x)
+
+> **Spread:** sd(x), IQR(x), mad(x) *(median absolute deviation)* 
+
+> **Rank:** min(x), quantile( x, 0.5) , max(x)
+
+> **Position:** first(x) , nth(x, 5), last(x)
+
+> **Counts:** n(), sum(is.na(x)), sum(!(is.na(x))), n_distinct(x)
+
+Find the sum of 'NAs' in the origin column in each month:  
+```{r, eval=FALSE}
+flights %>% group_by(month) %>% summarize(na_origin = sum(is.na(origin)))
+```
+
+
+## Exercises {.build}
+
+
+Provide another approach to attain output from the following: 
+
+```{r,eval=F}
+not_cancelled %>% count(dest)
+```
+Essentially: Find all flights that are not cancelled.  
+
+One solution: 
+```{r,eval=F}
+not_cancelled <- flights %>%
+  filter(!is.na(dep_delay), !is.na(arr_delay))
+```
+
+Other solutions?
+
+If a flight never departs, then it won't arrive. But a flight could also depart and not arrive (crashes, lost flights). We could use 'arr_delay' as a proxy to define cancelled flights.  
+
+
+## Exercises cont. {.build}
+
+For each plane, count the number of flights before the first delay of greater than one hour. 
+
+What dplyr verbs do we want to use?
+
+```{r,eval=F}
+flights %>%
+  arrange(tailnum, year, month, day) %>%
+  group_by(tailnum) %>%
+  mutate(delay_gt1hr = dep_delay > 60) %>%
+  mutate(before_delay = cumsum(delay_gt1hr)) %>%
+  filter(before_delay < 1) %>%
+  count(sort = TRUE)
+```
+
+
+
+## Exercises {.build}
+
+For each destination, compute the total minutes of delay.  
+
+For each flight, compute the proportion of the total delay for its destination. 
+
+```{r, eval=F}
+flights %>%
+  filter(!is.na(arr_delay), arr_delay > 0) %>%
+  group_by(dest) %>%
+  mutate(
+    arr_delay_total = sum(arr_delay),
+    arr_delay_prop = arr_delay / arr_delay_total) %>% 
+  ungroup()
+```
+
+
+## Exercises cont. {.build}
+
+Find destinations that are flown by at least two carriers. 
+
+```{r, eval=FALSE}
+dest_2carriers <- flights %>%
+  # keep only unique carrier,dest pairs
+  select(dest, carrier) %>%
+  group_by(dest, carrier) %>%
+  filter(row_number() == 1) %>%
+  # count carriers by destination
+  group_by(dest) %>%
+  mutate(n_carrier = n_distinct(carrier)) %>%
+  filter(n_carrier >= 2)
+```
 
